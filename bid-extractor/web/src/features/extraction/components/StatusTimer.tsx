@@ -8,6 +8,8 @@ const STATUS_LABELS: Record<string, string> = {
   failed: "Failed",
 };
 
+const STEP_ORDER = ["pending", "parsing", "extracting", "complete"];
+
 export function StatusTimer({
   status,
   statusMessage,
@@ -44,18 +46,43 @@ export function StatusTimer({
 
   const done = status === "complete" || status === "failed";
   const label = statusMessage ?? STATUS_LABELS[status] ?? status;
+  const stepIdx = STEP_ORDER.indexOf(status);
+  const progressPct =
+    status === "failed"
+      ? 0
+      : status === "complete"
+        ? 100
+        : Math.max(5, (stepIdx / (STEP_ORDER.length - 1)) * 100);
 
   return (
-    <div className="flex items-center gap-3">
-      {!done && (
-        <div className="h-3.5 w-3.5 animate-spin rounded-full border border-muted-foreground border-t-transparent" />
-      )}
-      <div>
-        <p className="text-xs text-muted-foreground">{label}</p>
+    <div className="space-y-1.5">
+      <div className="flex items-center gap-2">
         {!done && (
-          <p className="text-xs text-muted-foreground">{elapsed}s elapsed</p>
+          <div className="h-3 w-3 animate-spin rounded-full border border-muted-foreground border-t-transparent" />
         )}
+        {status === "complete" && (
+          <div className="h-2 w-2 rounded-full bg-emerald-500" />
+        )}
+        {status === "failed" && (
+          <div className="h-2 w-2 rounded-full bg-destructive" />
+        )}
+        <p className="text-xs text-muted-foreground">
+          {label}
+          {!done && (
+            <span className="ml-2 tabular-nums text-muted-foreground/60">
+              {elapsed}s
+            </span>
+          )}
+        </p>
       </div>
+      {!done && (
+        <div className="h-0.5 w-full overflow-hidden rounded-full bg-border">
+          <div
+            className="h-full rounded-full bg-muted-foreground/50 transition-all duration-700 ease-out"
+            style={{ width: `${progressPct}%` }}
+          />
+        </div>
+      )}
     </div>
   );
 }

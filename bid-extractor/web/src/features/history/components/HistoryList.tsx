@@ -46,7 +46,7 @@ export function HistoryList() {
       {data.map((row) => (
         <div
           key={row.id}
-          className="flex items-center gap-3 rounded-lg border border-border bg-card p-4 transition-colors hover:bg-accent"
+          className="flex items-center gap-3 rounded-lg border border-border bg-card p-4 transition-all hover:bg-accent hover:border-border/80"
         >
           <FileText className="h-4 w-4 shrink-0 text-muted-foreground/60" />
           <Link to={`/extraction/${row.id}`} className="min-w-0 flex-1">

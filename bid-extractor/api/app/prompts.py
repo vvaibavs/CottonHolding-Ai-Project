@@ -35,6 +35,17 @@ ceiling, no Q&A deadline, no LD rate, etc.).
 facts from those pages — prefer null over a hallucinated value.
 10. Output ONLY the JSON object. No prose, no code fences.
 
+LENGTH LIMITS — respect these strictly to keep output fast and concise:
+- `plain_english_summary`: 150–250 words max. No filler.
+- `plain_english` (callouts): 1–3 sentences each, 50 words max.
+- `what_is_unclear` (ambiguities): 1–2 sentences, 60 words max.
+- `description` (risks): 1–2 sentences, 60 words max.
+- `verbatim` fields: quote only the essential clause text, max 500 characters. Trim surrounding boilerplate.
+- `missing_info`: each item is a short phrase, not a paragraph.
+- Lists: max 15 callouts, 10 risks, 10 ambiguities, 15 missing_info items. \
+If the document has more, keep only the most significant.
+- `confidence_note`: 1–2 sentences max.
+
 DO NOT:
 - Infer a deadline not explicitly stated — use `ambiguities` instead
 - Combine multiple obligations into one callout — one clause = one callout
@@ -81,6 +92,12 @@ RULES:
    but does not specify whether a claims-made or occurrence policy is acceptable.
    Please confirm which is acceptable."
 7. Output ONLY the JSON object. No prose, no code fences.
+
+LENGTH LIMITS — respect these strictly:
+- Generate at most 10 questions total (3 must_ask, 4 should_ask, 3 nice_to_ask max).
+- Each `question` field: 1–3 sentences, 80 words max.
+- Each `why_it_matters` field: 1 sentence, 30 words max.
+- `strategic_note`: 2–3 sentences, 60 words max.
 
 DO NOT generate questions about:
 - Information already clearly stated in the document

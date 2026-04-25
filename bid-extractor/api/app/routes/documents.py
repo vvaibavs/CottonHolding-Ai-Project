@@ -64,7 +64,7 @@ async def upload(
         {"storage_path": storage_path}
     ).eq("id", job_id).execute()
 
-    budget = max(128, min(4096, thinking_budget))
+    budget = max(0, min(4096, thinking_budget))
     background.add_task(run_extraction, job_id=job_id, content=data, mime=real_mime, thinking_budget=budget)
     return {"job_id": job_id, "status": "pending"}
 

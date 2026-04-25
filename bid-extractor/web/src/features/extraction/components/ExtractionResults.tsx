@@ -106,23 +106,40 @@ export function ExtractionResults({
     return () => observer.disconnect();
   }, []);
 
+  const sectionCounts: Record<string, number | null> = {
+    summary: null,
+    scope: null,
+    dates: data.key_dates.length + data.submission_requirements.length,
+    callouts: data.callouts.length,
+    risks: data.risks.length + data.ambiguities.length + data.missing_info.length,
+    questions: questions?.questions.length ?? null,
+  };
+
   return (
     <div className="flex gap-8">
       <nav className="sticky top-4 hidden h-fit w-44 shrink-0 space-y-0.5 lg:block">
-        {SECTIONS.map((s) => (
-          <a
-            key={s.id}
-            href={`#${s.id}`}
-            className={cn(
-              "block rounded px-3 py-1.5 text-xs transition-colors",
-              active === s.id
-                ? "bg-accent text-foreground"
-                : "text-muted-foreground hover:text-foreground",
-            )}
-          >
-            {s.label}
-          </a>
-        ))}
+        {SECTIONS.map((s) => {
+          const count = sectionCounts[s.id];
+          return (
+            <a
+              key={s.id}
+              href={`#${s.id}`}
+              className={cn(
+                "flex items-center justify-between rounded px-3 py-1.5 text-xs transition-colors",
+                active === s.id
+                  ? "bg-accent text-foreground"
+                  : "text-muted-foreground hover:text-foreground",
+              )}
+            >
+              <span>{s.label}</span>
+              {count != null && count > 0 && (
+                <span className="tabular-nums text-[10px] text-muted-foreground/50">
+                  {count}
+                </span>
+              )}
+            </a>
+          );
+        })}
       </nav>
 
       <div className="min-w-0 flex-1 space-y-6">
@@ -147,14 +164,27 @@ export function ExtractionResults({
               </span>
             )}
           </div>
-          <p className="mt-2 text-xs text-muted-foreground/60">
-            {data.confidence_note}
-          </p>
+          <div className="mt-2 flex items-center gap-2">
+            <div
+              className={cn(
+                "h-1.5 w-1.5 rounded-full",
+                data.confidence_note.startsWith("HIGH")
+                  ? "bg-emerald-500"
+                  : data.confidence_note.startsWith("MEDIUM")
+                    ? "bg-yellow-500"
+                    : "bg-destructive",
+              )}
+            />
+            <p className="text-xs text-muted-foreground/60">
+              {data.confidence_note}
+            </p>
+          </div>
         </div>
 
         {/* Summary */}
         <Card
           id="summary"
+          className="scroll-mt-6"
           ref={(el) => {
             sectionRefs.current["summary"] = el;
           }}
@@ -172,6 +202,7 @@ export function ExtractionResults({
         {/* Scope */}
         <Card
           id="scope"
+          className="scroll-mt-6"
           ref={(el) => {
             sectionRefs.current["scope"] = el;
           }}
@@ -189,6 +220,7 @@ export function ExtractionResults({
         {/* Dates & Submissions */}
         <Card
           id="dates"
+          className="scroll-mt-6"
           ref={(el) => {
             sectionRefs.current["dates"] = el;
           }}
@@ -291,6 +323,7 @@ export function ExtractionResults({
         {/* Legal & Compliance Callouts */}
         <Card
           id="callouts"
+          className="scroll-mt-6"
           ref={(el) => {
             sectionRefs.current["callouts"] = el;
           }}
@@ -336,6 +369,7 @@ export function ExtractionResults({
         {/* Risks & Ambiguities */}
         <Card
           id="risks"
+          className="scroll-mt-6"
           ref={(el) => {
             sectionRefs.current["risks"] = el;
           }}
@@ -428,6 +462,7 @@ export function ExtractionResults({
         {/* Questions to Ask */}
         <div
           id="questions"
+          className="scroll-mt-6"
           ref={(el) => {
             sectionRefs.current["questions"] = el;
           }}

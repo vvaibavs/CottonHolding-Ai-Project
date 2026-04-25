@@ -11,8 +11,11 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center p-4">
-      <LoginForm />
+    <div className="relative flex min-h-screen items-center justify-center p-4">
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--color-card)_0%,_transparent_50%)]" />
+      <div className="relative">
+        <LoginForm />
+      </div>
     </div>
   );
 }

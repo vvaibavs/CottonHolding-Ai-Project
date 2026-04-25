@@ -3,11 +3,11 @@ import { useCallback, useState } from "react";
 import { useDropzone } from "react-dropzone";
 
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { cn, formatBytes } from "@/lib/utils";
 
 import { useCreateExtraction } from "../api/useCreateExtraction";
 
-const BUDGET_MIN = 128;
+const BUDGET_MIN = 0;
 const BUDGET_MAX = 4096;
 
 function percentToBudget(pct: number): number {
@@ -78,9 +78,14 @@ export function UploadDropzone() {
           <div className="flex items-center justify-between">
             <div className="flex min-w-0 items-center gap-3">
               <FileText className="h-5 w-5 shrink-0 text-muted-foreground" />
-              <span className="truncate text-sm text-foreground">
-                {pendingFile.name}
-              </span>
+              <div className="min-w-0">
+                <p className="truncate text-sm text-foreground">
+                  {pendingFile.name}
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  {formatBytes(pendingFile.size)}
+                </p>
+              </div>
             </div>
             <button
               onClick={() => setPendingFile(null)}
@@ -128,7 +133,7 @@ export function UploadDropzone() {
         </p>
       )}
       <p className="mt-3 text-xs text-muted-foreground/60">
-        Uses Gemini AI. Do not upload confidential documents on the free tier.
+        Uses Gemini AI. Limited to 20 requests per day. Do not upload confidential documents on the free tier.
       </p>
     </div>
   );
