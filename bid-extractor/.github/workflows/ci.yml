@@ -1,0 +1,42 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: api
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: sudo apt-get install -y libmagic1
+      - run: pip install -e ".[test]"
+      - run: pytest -v
+        env:
+          SUPABASE_URL: https://fake.supabase.co
+          SUPABASE_ANON_KEY: fake
+          SUPABASE_SERVICE_ROLE_KEY: fake
+          SUPABASE_JWT_SECRET: fake-jwt-secret-at-least-32-chars-long
+          GEMINI_API_KEY: fake
+
+  frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - run: npm install
+      - run: npm -w web run build
+        env:
+          VITE_SUPABASE_URL: https://fake.supabase.co
+          VITE_SUPABASE_ANON_KEY: fake
+          VITE_API_BASE_URL: http://localhost:8000

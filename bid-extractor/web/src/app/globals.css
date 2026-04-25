@@ -1,0 +1,58 @@
+@import "tailwindcss";
+
+@theme {
+  --font-serif: "Times New Roman", Times, Georgia, serif;
+
+  --color-background: #0a0a0b;
+  --color-foreground: #e4e4e7;
+  --color-card: #111113;
+  --color-card-foreground: #e4e4e7;
+  --color-popover: #111113;
+  --color-popover-foreground: #e4e4e7;
+  --color-primary: #e4e4e7;
+  --color-primary-foreground: #0a0a0b;
+  --color-secondary: #1a1a1e;
+  --color-secondary-foreground: #a1a1aa;
+  --color-muted: #161618;
+  --color-muted-foreground: #71717a;
+  --color-accent: #1a1a1e;
+  --color-accent-foreground: #e4e4e7;
+  --color-destructive: #dc2626;
+  --color-destructive-foreground: #fef2f2;
+  --color-border: #222225;
+  --color-input: #222225;
+  --color-ring: #52525b;
+  --radius: 0.5rem;
+
+  --color-info: #3b82f6;
+  --color-info-foreground: #172554;
+  --color-warning: #ca8a04;
+  --color-warning-foreground: #1c1a00;
+  --color-critical: #dc2626;
+  --color-critical-foreground: #1c0606;
+}
+
+@layer base {
+  body {
+    @apply bg-background text-foreground;
+  }
+
+  ::selection {
+    @apply bg-primary/20 text-foreground;
+  }
+
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #2a2a2e;
+    border-radius: 3px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #3a3a3e;
+  }
+}

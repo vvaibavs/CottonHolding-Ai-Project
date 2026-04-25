@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install *)",
+      "Bash(VITE_SUPABASE_URL=https://fake.supabase.co VITE_SUPABASE_ANON_KEY=fake VITE_API_BASE_URL=http://localhost:8000 npm -w web run build)",
+      "Bash(pip install *)",
+      "Bash(python -m uvicorn app.main:app --host 0.0.0.0 --port 8000)",
+      "Bash(curl -s http://localhost:8000/health)"
+    ]
+  }
+}

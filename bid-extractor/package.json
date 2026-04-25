@@ -1,0 +1,13 @@
+{
+  "name": "bid-extractor",
+  "private": true,
+  "workspaces": [
+    "packages/shared",
+    "web"
+  ],
+  "scripts": {
+    "dev": "npm -w web run dev",
+    "build": "npm -w web run build",
+    "preview": "npm -w web run preview"
+  }
+}
