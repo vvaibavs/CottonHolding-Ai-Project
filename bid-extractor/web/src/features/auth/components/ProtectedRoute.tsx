@@ -1,5 +1,6 @@
 import { Navigate, Outlet } from "react-router-dom";
 
+import { DisclaimerModal } from "@/components/DisclaimerModal";
 import { useSession } from "@/features/auth/api/useSession";
 
 export function ProtectedRoute() {
@@ -17,5 +18,10 @@ export function ProtectedRoute() {
     return <Navigate to="/login" replace />;
   }
 
-  return <Outlet />;
+  return (
+    <>
+      <DisclaimerModal />
+      <Outlet />
+    </>
+  );
 }
