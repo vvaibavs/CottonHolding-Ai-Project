@@ -67,28 +67,30 @@ export function LoginForm() {
   }
 
   return (
-    <div className="w-full max-w-sm">
-      <div className="mb-8 text-center">
-        <h1 className="font-serif text-4xl font-normal tracking-tight text-foreground">
+    <div className="w-full max-w-sm animate-slide-up">
+      <div className="mb-10 text-center">
+        <p className="mb-3 text-[11px] uppercase tracking-[0.2em] text-muted-foreground/50">
+          Document Intelligence
+        </p>
+        <h1 className="font-serif text-5xl font-normal tracking-tight text-foreground">
           Bid Extractor
         </h1>
-        <div className="mx-auto mt-3 h-px w-12 bg-border" />
-        <p className="mt-3 text-sm text-muted-foreground">
+        <div className="mx-auto mt-5 h-px w-16 bg-gradient-to-r from-transparent via-white/20 to-transparent" />
+        <p className="mt-5 text-sm text-muted-foreground/70">
           Sign in to continue
         </p>
       </div>
 
-      <div className="rounded-lg border border-border bg-card p-6">
-        <form onSubmit={handleSubmit(onPasswordLogin)} className="space-y-4">
+      <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-7 backdrop-blur-sm">
+        <form onSubmit={handleSubmit(onPasswordLogin)} className="space-y-5">
           <div className="space-y-2">
-            <Label htmlFor="email" className="text-xs uppercase tracking-widest text-muted-foreground">
+            <Label htmlFor="email" className="text-[11px] uppercase tracking-[0.15em] text-muted-foreground/60">
               Email
             </Label>
             <Input
               id="email"
               type="email"
               placeholder="you@example.com"
-              className="bg-background"
               {...register("email")}
             />
             {errors.email && (
@@ -98,14 +100,13 @@ export function LoginForm() {
 
           {mode === "password" && (
             <div className="space-y-2">
-              <Label htmlFor="password" className="text-xs uppercase tracking-widest text-muted-foreground">
+              <Label htmlFor="password" className="text-[11px] uppercase tracking-[0.15em] text-muted-foreground/60">
                 Password
               </Label>
               <Input
                 id="password"
                 type="password"
                 placeholder="••••••••"
-                className="bg-background"
                 {...register("password")}
               />
               {errors.password && (
@@ -117,23 +118,23 @@ export function LoginForm() {
           )}
 
           {error && <p className="text-sm text-destructive">{error}</p>}
-          {message && <p className="text-sm text-blue-400">{message}</p>}
+          {message && <p className="text-sm text-blue-400/80">{message}</p>}
 
           {mode === "password" ? (
-            <div className="space-y-3 pt-2">
+            <div className="space-y-3 pt-1 w-75">
               <Button type="submit" className="w-full" disabled={isSubmitting}>
                 {isSubmitting ? "Signing in..." : "Sign In / Sign Up"}
               </Button>
               <button
                 type="button"
-                className="w-full text-center text-xs text-muted-foreground transition-colors hover:text-foreground"
+                className="w-full text-center text-xs text-muted-foreground/50 transition-colors duration-200 hover:text-foreground/70"
                 onClick={() => setMode("magic")}
               >
-                Use magic link instead
+
               </button>
             </div>
           ) : (
-            <div className="space-y-3 pt-2">
+            <div className="space-y-3 pt-1">
               <Button
                 type="button"
                 className="w-full"
@@ -144,7 +145,7 @@ export function LoginForm() {
               </Button>
               <button
                 type="button"
-                className="w-full text-center text-xs text-muted-foreground transition-colors hover:text-foreground"
+                className="w-full text-center text-xs text-muted-foreground/50 transition-colors duration-200 hover:text-foreground/70"
                 onClick={() => setMode("password")}
               >
                 Use password instead

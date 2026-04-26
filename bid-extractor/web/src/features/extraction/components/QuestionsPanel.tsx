@@ -11,9 +11,9 @@ import type { QuestionSet } from "../schemas";
 
 const PRIORITY_ORDER = ["must_ask", "should_ask", "nice_to_ask"] as const;
 const PRIORITY_STYLE: Record<string, { label: string; className: string }> = {
-  must_ask: { label: "Must Ask", className: "border-red-800/40 bg-red-950/50 text-red-400" },
-  should_ask: { label: "Should Ask", className: "border-yellow-800/40 bg-yellow-950/50 text-yellow-400" },
-  nice_to_ask: { label: "Nice to Ask", className: "border-blue-800/40 bg-blue-950/50 text-blue-400" },
+  must_ask: { label: "Must Ask", className: "border-red-500/15 bg-red-500/[0.06] text-red-400/80" },
+  should_ask: { label: "Should Ask", className: "border-yellow-500/15 bg-yellow-500/[0.06] text-yellow-400/80" },
+  nice_to_ask: { label: "Nice to Ask", className: "border-blue-500/15 bg-blue-500/[0.06] text-blue-400/80" },
 };
 
 const CATEGORY_LABEL: Record<string, string> = {
@@ -50,13 +50,13 @@ export function QuestionsPanel({
     return (
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2 font-serif text-lg font-normal tracking-tight">
-            <MessageSquareText className="h-4 w-4 text-muted-foreground" />
+          <CardTitle className="flex items-center gap-2.5 font-serif text-lg font-normal tracking-tight">
+            <MessageSquareText className="h-4 w-4 text-muted-foreground/30" />
             Questions to Ask
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="mb-4 text-sm text-muted-foreground">
+          <p className="mb-5 text-sm text-muted-foreground/50">
             Generate strategically prioritized clarification questions for the official Q&A period.
           </p>
           <Button
@@ -65,7 +65,7 @@ export function QuestionsPanel({
           >
             {mutation.isPending ? (
               <>
-                <div className="mr-2 h-3.5 w-3.5 animate-spin rounded-full border-2 border-primary-foreground border-t-transparent" />
+                <div className="mr-2 h-3.5 w-3.5 animate-spin rounded-full border border-primary-foreground/30 border-t-primary-foreground" />
                 Generating...
               </>
             ) : (
@@ -98,36 +98,35 @@ export function QuestionsPanel({
     <Card>
       <CardHeader>
         <div className="flex items-center justify-between">
-          <CardTitle className="flex items-center gap-2 font-serif text-lg font-normal tracking-tight">
-            <MessageSquareText className="h-4 w-4 text-muted-foreground" />
+          <CardTitle className="flex items-center gap-2.5 font-serif text-lg font-normal tracking-tight">
+            <MessageSquareText className="h-4 w-4 text-muted-foreground/30" />
             Questions to Ask
           </CardTitle>
           <Button
             variant="outline"
             size="sm"
-            className="text-xs"
             onClick={() => {
               copyAllQuestions(data.questions);
               setCopied(true);
               setTimeout(() => setCopied(false), 2000);
             }}
           >
-            <ClipboardCopy className="mr-1 h-3 w-3" />
+            <ClipboardCopy className="mr-1.5 h-3 w-3" />
             {copied ? "Copied!" : "Copy All"}
           </Button>
         </div>
       </CardHeader>
-      <CardContent className="space-y-6">
-        <div className="rounded-lg border border-blue-900/30 bg-blue-950/30 p-4">
-          <p className="text-xs font-medium uppercase tracking-widest text-blue-400">
+      <CardContent className="space-y-8">
+        <div className="rounded-xl border border-blue-500/10 bg-blue-500/[0.03] p-5">
+          <p className="text-[11px] font-medium uppercase tracking-[0.15em] text-blue-400/60">
             Strategic Note
           </p>
-          <p className="mt-2 text-sm text-blue-200/80">{data.strategic_note}</p>
+          <p className="mt-2 text-sm leading-relaxed text-blue-200/60">{data.strategic_note}</p>
         </div>
 
         {[...grouped.entries()].map(([category, categoryQuestions]) => (
           <div key={category}>
-            <h4 className="mb-3 text-xs font-medium uppercase tracking-widest text-muted-foreground">
+            <h4 className="mb-4 text-[11px] font-medium uppercase tracking-[0.15em] text-muted-foreground/40">
               {CATEGORY_LABEL[category] ?? category}
             </h4>
             <div className="space-y-2">
@@ -136,21 +135,21 @@ export function QuestionsPanel({
                 return (
                   <div
                     key={`${category}-${i}`}
-                    className="rounded-lg border border-border bg-card p-4"
+                    className="rounded-xl border border-white/[0.04] bg-white/[0.01] p-5 transition-colors duration-200 hover:bg-white/[0.02]"
                   >
-                    <div className="mb-2 flex items-center gap-2">
+                    <div className="mb-2.5 flex items-center gap-2">
                       <Badge
                         variant="outline"
                         className={cn("text-[10px]", style?.className)}
                       >
                         {style?.label ?? q.priority}
                       </Badge>
-                      <span className="text-[10px] text-muted-foreground">
+                      <span className="text-[10px] text-muted-foreground/30">
                         {q.derived_from.replace("_", " ")} &middot; {q.source_topic}
                       </span>
                     </div>
-                    <p className="text-sm text-foreground/90">{q.question}</p>
-                    <p className="mt-1.5 text-xs text-muted-foreground">
+                    <p className="text-sm leading-relaxed text-foreground/80">{q.question}</p>
+                    <p className="mt-2 text-xs leading-relaxed text-muted-foreground/40">
                       {q.why_it_matters}
                     </p>
                   </div>

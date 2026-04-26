@@ -49,58 +49,62 @@ export function UploadDropzone() {
         <div
           {...getRootProps()}
           className={cn(
-            "flex cursor-pointer flex-col items-center justify-center rounded-lg border border-dashed p-16 transition-all",
+            "flex cursor-pointer flex-col items-center justify-center rounded-xl border border-dashed p-20 transition-all duration-300",
             isDragActive
-              ? "border-foreground/40 bg-card"
-              : "border-border hover:border-foreground/20 hover:bg-card/50",
+              ? "border-foreground/30 bg-white/[0.03]"
+              : "border-white/[0.06] hover:border-white/[0.12] hover:bg-white/[0.015]",
           )}
         >
           <input {...getInputProps()} />
-          <Upload className="mb-4 h-8 w-8 text-muted-foreground/60" />
+          <Upload className="mb-5 h-7 w-7 text-muted-foreground/30" />
           {isDragActive ? (
-            <p className="text-sm text-foreground">Drop your file here</p>
+            <p className="font-serif text-lg text-foreground/80">Drop your file here</p>
           ) : (
             <div className="text-center">
-              <p className="text-sm text-foreground/80">
+              <p className="font-serif text-lg text-foreground/70">
                 Drag & drop a PDF or DOCX file
               </p>
-              <p className="mt-1 text-xs text-muted-foreground">
+              <p className="mt-2 text-xs text-muted-foreground/40">
                 or click to browse &middot; max 50 MB
               </p>
             </div>
           )}
-          <Button variant="outline" size="sm" className="mt-6">
+          <Button variant="outline" size="sm" className="mt-8">
             Select File
           </Button>
         </div>
       ) : (
-        <div className="space-y-5 rounded-lg border border-border bg-card p-6">
+        <div className="space-y-5 rounded-xl border border-white/[0.06] bg-white/[0.02] p-7 backdrop-blur-sm">
           <div className="flex items-center justify-between">
-            <div className="flex min-w-0 items-center gap-3">
-              <FileText className="h-5 w-5 shrink-0 text-muted-foreground" />
+            <div className="flex min-w-0 items-center gap-4">
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-white/[0.04]">
+                <FileText className="h-5 w-5 text-muted-foreground/60" />
+              </div>
               <div className="min-w-0">
-                <p className="truncate text-sm text-foreground">
+                <p className="truncate text-sm text-foreground/90">
                   {pendingFile.name}
                 </p>
-                <p className="text-xs text-muted-foreground">
+                <p className="mt-0.5 text-xs text-muted-foreground/40">
                   {formatBytes(pendingFile.size)}
                 </p>
               </div>
             </div>
             <button
               onClick={() => setPendingFile(null)}
-              className="ml-3 shrink-0 text-muted-foreground hover:text-foreground"
+              className="ml-3 shrink-0 text-muted-foreground/30 transition-colors duration-200 hover:text-foreground"
             >
               <X className="h-4 w-4" />
             </button>
           </div>
 
-          <div className="space-y-2">
+          <div className="h-px bg-white/[0.04]" />
+
+          <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <label className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+              <label className="text-[11px] uppercase tracking-[0.15em] text-muted-foreground/50">
                 Thinking Budget
               </label>
-              <span className="tabular-nums text-xs text-foreground">
+              <span className="tabular-nums text-xs text-foreground/60">
                 {budgetPct}% &middot; {budget.toLocaleString()} tokens
               </span>
             </div>
@@ -112,7 +116,7 @@ export function UploadDropzone() {
               onChange={(e) => setBudgetPct(Number(e.target.value))}
               className="w-full accent-foreground"
             />
-            <div className="flex justify-between text-[10px] text-muted-foreground/60">
+            <div className="flex justify-between text-[10px] text-muted-foreground/30">
               <span>Faster</span>
               <span>More thorough</span>
             </div>
@@ -132,7 +136,7 @@ export function UploadDropzone() {
           {mutation.error.message}
         </p>
       )}
-      <p className="mt-3 text-xs text-muted-foreground/60">
+      <p className="mt-4 text-xs text-muted-foreground/30">
         Uses Gemini AI. Limited to 20 requests per day. Do not upload confidential documents on the free tier.
       </p>
     </div>

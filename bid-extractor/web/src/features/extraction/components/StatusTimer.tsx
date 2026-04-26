@@ -55,30 +55,30 @@ export function StatusTimer({
         : Math.max(5, (stepIdx / (STEP_ORDER.length - 1)) * 100);
 
   return (
-    <div className="space-y-1.5">
-      <div className="flex items-center gap-2">
+    <div className="space-y-2">
+      <div className="flex items-center gap-2.5">
         {!done && (
-          <div className="h-3 w-3 animate-spin rounded-full border border-muted-foreground border-t-transparent" />
+          <div className="h-3 w-3 animate-spin rounded-full border border-foreground/20 border-t-foreground/60" />
         )}
         {status === "complete" && (
-          <div className="h-2 w-2 rounded-full bg-emerald-500" />
+          <div className="h-2 w-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,.4)]" />
         )}
         {status === "failed" && (
-          <div className="h-2 w-2 rounded-full bg-destructive" />
+          <div className="h-2 w-2 rounded-full bg-destructive shadow-[0_0_8px_rgba(220,38,38,.4)]" />
         )}
-        <p className="text-xs text-muted-foreground">
+        <p className="text-xs text-muted-foreground/70">
           {label}
           {!done && (
-            <span className="ml-2 tabular-nums text-muted-foreground/60">
+            <span className="ml-2 tabular-nums text-muted-foreground/30">
               {elapsed}s
             </span>
           )}
         </p>
       </div>
       {!done && (
-        <div className="h-0.5 w-full overflow-hidden rounded-full bg-border">
+        <div className="h-[2px] w-full overflow-hidden rounded-full bg-white/[0.04]">
           <div
-            className="h-full rounded-full bg-muted-foreground/50 transition-all duration-700 ease-out"
+            className="h-full rounded-full bg-gradient-to-r from-foreground/30 to-foreground/50 transition-all duration-700 ease-out"
             style={{ width: `${progressPct}%` }}
           />
         </div>

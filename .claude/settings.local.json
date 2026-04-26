@@ -9,7 +9,9 @@
       "Bash(npx tsc *)",
       "Bash(npx vite *)",
       "Bash(git status *)",
-      "Bash(python -m pytest tests/test_jobs.py -v)"
+      "Bash(python -m pytest tests/test_jobs.py -v)",
+      "WebFetch(domain:countdown.substraterx.com)",
+      "WebFetch(domain:www.awwwards.com)"
     ]
   }
 }
