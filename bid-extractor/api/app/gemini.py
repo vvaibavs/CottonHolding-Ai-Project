@@ -54,7 +54,7 @@ async def generate_questions(extraction: BidExtraction) -> QuestionSet:
             response_mime_type="application/json",
             response_schema=QuestionSet,
             temperature=0.2,
-            max_output_tokens=2048,
+            max_output_tokens=8192,
             thinking_config=types.ThinkingConfig(thinking_budget=1024),
             safety_settings=[
                 types.SafetySetting(category=c, threshold="BLOCK_NONE")
