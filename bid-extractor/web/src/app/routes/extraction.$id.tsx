@@ -212,6 +212,7 @@ export default function ExtractionPage() {
           jobId={id!}
           questions={parsedQuestions}
           onCitationClick={handleCitationClick}
+          sidebarOverlay={!pdfCollapsed}
         />
       )}
 

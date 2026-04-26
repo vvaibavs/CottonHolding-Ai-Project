@@ -1,4 +1,5 @@
-import { useEffect, useRef, useState } from "react";
+import { ChevronsRight } from "lucide-react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import rehypeSanitize from "rehype-sanitize";
 import remarkGfm from "remark-gfm";
@@ -78,14 +79,33 @@ export function ExtractionResults({
   jobId,
   questions,
   onCitationClick,
+  sidebarOverlay = false,
 }: {
   data: BidExtraction;
   jobId: string;
   questions?: QuestionSet | null;
   onCitationClick?: (page: number) => void;
+  sidebarOverlay?: boolean;
 }) {
   const [active, setActive] = useState("summary");
   const sectionRefs = useRef<Record<string, HTMLElement | null>>({});
+  const [sidebarVisible, setSidebarVisible] = useState(false);
+  const hideTimer = useRef<ReturnType<typeof setTimeout>>(null);
+
+  const showSidebar = useCallback(() => {
+    if (hideTimer.current) clearTimeout(hideTimer.current);
+    setSidebarVisible(true);
+  }, []);
+
+  const hideSidebar = useCallback(() => {
+    hideTimer.current = setTimeout(() => setSidebarVisible(false), 300);
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      if (hideTimer.current) clearTimeout(hideTimer.current);
+    };
+  }, []);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -115,32 +135,71 @@ export function ExtractionResults({
     questions: questions?.questions.length ?? null,
   };
 
+  const sidebarNav = (
+    <nav className="h-fit w-44 shrink-0 space-y-0.5">
+      {SECTIONS.map((s) => {
+        const count = sectionCounts[s.id];
+        return (
+          <a
+            key={s.id}
+            href={`#${s.id}`}
+            className={cn(
+              "flex items-center justify-between rounded-lg px-3 py-2 text-xs transition-all duration-200",
+              active === s.id
+                ? "bg-white/[0.04] text-foreground"
+                : "text-muted-foreground/40 hover:text-foreground/70 hover:bg-white/[0.02]",
+            )}
+          >
+            <span>{s.label}</span>
+            {count != null && count > 0 && (
+              <span className="tabular-nums text-[10px] text-muted-foreground/25">
+                {count}
+              </span>
+            )}
+          </a>
+        );
+      })}
+    </nav>
+  );
+
   return (
-    <div className="flex gap-10">
-      <nav className="sticky top-6 hidden h-fit w-44 shrink-0 space-y-0.5 lg:block">
-        {SECTIONS.map((s) => {
-          const count = sectionCounts[s.id];
-          return (
-            <a
-              key={s.id}
-              href={`#${s.id}`}
-              className={cn(
-                "flex items-center justify-between rounded-lg px-3 py-2 text-xs transition-all duration-200",
-                active === s.id
-                  ? "bg-white/[0.04] text-foreground"
-                  : "text-muted-foreground/40 hover:text-foreground/70 hover:bg-white/[0.02]",
-              )}
-            >
-              <span>{s.label}</span>
-              {count != null && count > 0 && (
-                <span className="tabular-nums text-[10px] text-muted-foreground/25">
-                  {count}
-                </span>
-              )}
-            </a>
-          );
-        })}
-      </nav>
+    <div className="relative flex gap-10">
+      {sidebarOverlay ? (
+        <>
+          {/* Hover trigger zone with icon hint */}
+          <div
+            className={cn(
+              "fixed left-0 top-1/2 z-40 hidden -translate-y-1/2 lg:flex",
+              "h-9 w-5 cursor-pointer items-center justify-center",
+              "rounded-r-md border border-l-0 border-white/[0.15] bg-background shadow-sm",
+              "text-foreground/70 transition-all duration-200",
+              "hover:w-6 hover:bg-white/[0.1] hover:text-foreground",
+              sidebarVisible && "pointer-events-none opacity-0",
+            )}
+            onMouseEnter={showSidebar}
+          >
+            <ChevronsRight className="h-3.5 w-3.5" />
+          </div>
+          {/* Sliding overlay sidebar */}
+          <div
+            className={cn(
+              "fixed left-0 top-0 z-50 hidden h-full lg:block",
+              "transition-transform duration-200 ease-out",
+              sidebarVisible ? "translate-x-0" : "-translate-x-full",
+            )}
+            onMouseEnter={showSidebar}
+            onMouseLeave={hideSidebar}
+          >
+            <div className="flex h-full w-52 flex-col border-r border-white/[0.06] bg-background/95 px-3 pt-20 shadow-[4px_0_24px_rgba(0,0,0,.4)] backdrop-blur-md">
+              {sidebarNav}
+            </div>
+          </div>
+        </>
+      ) : (
+        <div className="sticky top-6 hidden h-fit lg:block">
+          {sidebarNav}
+        </div>
+      )}
 
       <div className="min-w-0 flex-1 space-y-8">
         {/* Header */}
