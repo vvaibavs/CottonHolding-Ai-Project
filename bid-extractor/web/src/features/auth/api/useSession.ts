@@ -20,8 +20,9 @@ export function useSession() {
   useEffect(() => {
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange(() => {
+    } = supabase.auth.onAuthStateChange((_event, session) => {
       queryClient.invalidateQueries({ queryKey: ["auth", "session"] });
+      queryClient.removeQueries({ predicate: (q) => q.queryKey[0] !== "auth" });
     });
     return () => subscription.unsubscribe();
   }, [queryClient]);
