@@ -52,6 +52,14 @@ export function DisclaimerModal() {
 
         <div className="mt-5 space-y-4 text-sm leading-relaxed text-muted-foreground">
           <div className="flex gap-3">
+            <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-orange-500/10 text-xs text-orange-500">~</span>
+            <p>
+              <span className="font-medium text-foreground">Cold starts after inactivity.</span>{" "}
+              The server sleeps after periods of inactivity. You should wait 1-2 minutes while it wakes up to make your first request.
+            </p>
+          </div>
+
+          <div className="flex gap-3">
             <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-yellow-500/10 text-xs text-yellow-500">!</span>
             <p>
               <span className="font-medium text-foreground">Slower processing speeds.</span>{" "}
