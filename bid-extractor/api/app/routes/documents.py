@@ -18,7 +18,7 @@ ALLOWED = {
 
 
 @router.post("/documents", status_code=202)
-async def upload(
+def upload(
     background: BackgroundTasks,
     file: UploadFile = File(...),
     thinking_budget: int = Form(4096),
@@ -28,7 +28,7 @@ async def upload(
         raise HTTPException(status_code=415, detail="Only PDF and DOCX accepted")
 
     max_bytes = settings.max_upload_mb * 1024 * 1024
-    data = await file.read(max_bytes + 1)
+    data = file.file.read(max_bytes + 1)
     if len(data) > max_bytes:
         raise HTTPException(
             status_code=413, detail=f"File exceeds {settings.max_upload_mb} MB"

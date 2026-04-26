@@ -185,7 +185,7 @@ export default function ExtractionPage() {
           </CardHeader>
           <CardContent>
             <p className="text-sm text-muted-foreground">
-              Your document is being analyzed. This usually takes 30–60 seconds.
+              Your document is being analyzed. This usually takes 1-2 minutes.
             </p>
           </CardContent>
         </Card>

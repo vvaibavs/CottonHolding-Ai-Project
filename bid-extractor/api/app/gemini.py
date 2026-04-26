@@ -18,7 +18,7 @@ async def extract_bid(markdown: str, thinking_budget: int = 4096) -> BidExtracti
             system_instruction=SYSTEM_PROMPT,
             response_mime_type="application/json",
             response_schema=BidExtraction,
-            max_output_tokens=8192,
+            max_output_tokens=65536,
             temperature=0.1,
             thinking_config=types.ThinkingConfig(thinking_budget=thinking_budget),
             safety_settings=[
