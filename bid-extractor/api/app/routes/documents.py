@@ -55,17 +55,16 @@ def upload(
 
     safe_name = Path(file.filename or "upload").name or "upload"
     storage_path = f"{user['id']}/{job_id}/{safe_name}"
-    supabase_admin.storage.from_("bids").upload(
-        path=storage_path,
-        file=data,
-        file_options={"content-type": real_mime, "upsert": "false"},
-    )
-    supabase_admin.table("extractions").update(
-        {"storage_path": storage_path}
-    ).eq("id", job_id).execute()
 
     budget = max(0, min(4096, thinking_budget))
-    background.add_task(run_extraction, job_id=job_id, content=data, mime=real_mime, thinking_budget=budget)
+    background.add_task(
+        run_extraction,
+        job_id=job_id,
+        content=data,
+        mime=real_mime,
+        thinking_budget=budget,
+        storage_path=storage_path,
+    )
     return {"job_id": job_id, "status": "pending"}
 
 

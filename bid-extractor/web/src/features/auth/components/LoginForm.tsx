@@ -32,11 +32,17 @@ export function LoginForm() {
     const { error: err } = await supabase.auth.signInWithPassword(values);
     if (err) {
       if (err.message.includes("Invalid login")) {
-        const { error: signUpErr } = await supabase.auth.signUp(values);
+        const { error: signUpErr } = await supabase.auth.signUp({
+          email: values.email,
+          password: values.password,
+          options: { emailRedirectTo: window.location.origin },
+        });
         if (signUpErr) {
           setError(signUpErr.message);
         } else {
-          setMessage("Account created! Check your email to confirm, then sign in.");
+          setMessage("Account created! Signing you in...");
+          const { error: loginErr } = await supabase.auth.signInWithPassword(values);
+          if (loginErr) setError(loginErr.message);
         }
       } else {
         setError(err.message);
