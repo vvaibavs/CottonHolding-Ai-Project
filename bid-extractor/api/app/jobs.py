@@ -1,6 +1,8 @@
 import asyncio
 from datetime import datetime, timezone
 
+from google.genai.errors import APIError
+
 from app.deps import supabase_admin
 from app.gemini import extract_bid
 from app.parsing import extract_to_markdown
@@ -46,5 +48,24 @@ async def run_extraction(
             result=result.model_dump(mode="json"),
             completed_at=datetime.now(timezone.utc).isoformat(),
         )
+    except APIError as e:
+        if e.code == 429:
+            await _set(
+                status="failed",
+                error_message=(
+                    "The daily AI request limit has been reached. "
+                    "Please try again tomorrow."
+                ),
+            )
+        elif e.code == 503:
+            await _set(
+                status="failed",
+                error_message=(
+                    "The AI model is currently experiencing high demand. "
+                    "Please wait a minute and try again."
+                ),
+            )
+        else:
+            await _set(status="failed", error_message=str(e)[:500])
     except Exception as e:
         await _set(status="failed", error_message=str(e)[:500])
