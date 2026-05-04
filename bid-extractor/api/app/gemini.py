@@ -11,9 +11,10 @@ _client = genai.Client(api_key=settings.gemini_api_key)
 
 
 async def extract_bid(markdown: str, thinking_budget: int = 4096) -> BidExtraction:
+    wrapped = f"<DOCUMENT>\n{markdown}\n</DOCUMENT>"
     resp = await _client.aio.models.generate_content(
         model="gemini-2.5-flash",
-        contents=[markdown],
+        contents=[wrapped],
         config=types.GenerateContentConfig(
             system_instruction=SYSTEM_PROMPT,
             response_mime_type="application/json",
