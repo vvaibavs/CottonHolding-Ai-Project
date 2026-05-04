@@ -6,6 +6,7 @@ class Settings(BaseSettings):
     supabase_anon_key: str
     supabase_service_role_key: str
     gemini_api_key: str
+    groq_api_key: str = ""
     allowed_origins: str = "http://localhost:5173"
     max_upload_mb: int = 50
     debug: bool = False

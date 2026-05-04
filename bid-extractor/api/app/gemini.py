@@ -20,6 +20,7 @@ async def extract_bid(markdown: str, thinking_budget: int = 4096) -> BidExtracti
             response_schema=BidExtraction,
             max_output_tokens=65536,
             temperature=0.1,
+            top_p=0.9,
             thinking_config=types.ThinkingConfig(thinking_budget=thinking_budget),
             safety_settings=[
                 types.SafetySetting(category=c, threshold="BLOCK_NONE")
@@ -54,6 +55,7 @@ async def generate_questions(extraction: BidExtraction) -> QuestionSet:
             response_mime_type="application/json",
             response_schema=QuestionSet,
             temperature=0.2,
+            top_p=0.9,
             max_output_tokens=8192,
             thinking_config=types.ThinkingConfig(thinking_budget=1024),
             safety_settings=[
