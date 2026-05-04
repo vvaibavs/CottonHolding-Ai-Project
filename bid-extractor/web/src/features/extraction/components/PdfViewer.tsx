@@ -15,76 +15,154 @@ export interface PdfViewerHandle {
   scrollToPage: (page: number, verbatim?: string | null) => void;
 }
 
-function highlightVerbatim(pageEl: HTMLElement, verbatim: string): boolean {
+function sanitize(s: string): string {
+  return s
+    .replace(/['‘’‚‹›]/g, "'")
+    .replace(/["“”„«»]/g, '"')
+    .replace(/[–—]/g, "-")
+    .replace(/…/g, "...")
+    .replace(/ /g, " ")
+    .toLowerCase()
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function findMatchedSpans(
+  pageEl: HTMLElement,
+  verbatim: string,
+): HTMLSpanElement[] | null {
   const textLayer = pageEl.querySelector(".react-pdf__Page__textContent");
-  if (!textLayer) return false;
+  if (!textLayer) return null;
 
   const allSpans = Array.from(
     textLayer.querySelectorAll("span"),
   ) as HTMLSpanElement[];
-  const spans = allSpans.filter((s) => (s.textContent ?? "").trim());
-  if (!spans.length) return false;
+  const filtered = allSpans.filter(
+    (s) => (s.textContent ?? "").trim() && s.getBoundingClientRect().width > 0,
+  );
+  if (!filtered.length) return null;
 
-  const norm = (s: string) =>
-    s.toLowerCase().replace(/\s+/g, " ").trim();
-  const target = norm(verbatim);
-  if (!target) return false;
+  const spans = filtered.sort((a, b) => {
+    const ra = a.getBoundingClientRect();
+    const rb = b.getBoundingClientRect();
+    const lineH = Math.min(ra.height, rb.height) * 0.5 || 4;
+    const dy = ra.top - rb.top;
+    if (Math.abs(dy) > lineH) return dy;
+    return ra.left - rb.left;
+  });
 
-  let matched: HTMLSpanElement[] | null = null;
+  const target = sanitize(verbatim);
+  if (!target) return null;
 
-  for (let i = 0; i < spans.length && !matched; i++) {
-    let concat = "";
-    for (let j = i; j < spans.length; j++) {
-      const text = spans[j]?.textContent ?? "";
-      concat += (j > i ? " " : "") + text;
-      const nc = norm(concat);
-      if (nc.includes(target)) {
-        matched = spans.slice(i, j + 1);
-        break;
+  let rawConcat = "";
+  const spanRanges: { el: HTMLSpanElement; start: number; end: number }[] = [];
+  for (const span of spans) {
+    const text = span.textContent ?? "";
+    if (rawConcat.length > 0) rawConcat += " ";
+    const start = rawConcat.length;
+    rawConcat += text;
+    spanRanges.push({ el: span, start, end: rawConcat.length });
+  }
+
+  const pageText = sanitize(rawConcat);
+
+  const candidates = [
+    target,
+    target.length > 80 ? target.slice(0, 80) : null,
+    target.length > 40 ? target.slice(0, 40) : null,
+  ].filter(Boolean) as string[];
+
+  let matchStart = -1;
+  let matchLen = 0;
+  for (const candidate of candidates) {
+    const idx = pageText.indexOf(candidate);
+    if (idx !== -1) {
+      matchStart = idx;
+      matchLen = candidate.length;
+      break;
+    }
+  }
+  if (matchStart === -1) return null;
+
+  let sanPos = 0;
+  let rawMatchStart = 0;
+  let rawMatchEnd = rawConcat.length;
+
+  const rawLower = rawConcat.toLowerCase();
+  let lastWasSpace = true;
+  for (let i = 0; i < rawLower.length && sanPos <= matchStart + matchLen; i++) {
+    const ch = rawLower[i]!;
+    const isSp = /\s/.test(ch);
+    if (isSp) {
+      if (!lastWasSpace) {
+        if (sanPos === matchStart) rawMatchStart = i;
+        sanPos++;
+        lastWasSpace = true;
       }
-      if (nc.length > target.length + 200) break;
+    } else {
+      if (sanPos === matchStart) rawMatchStart = i;
+      sanPos++;
+      lastWasSpace = false;
+    }
+    if (sanPos === matchStart + matchLen) {
+      rawMatchEnd = i + 1;
     }
   }
 
-  if (!matched) {
-    const short = target.slice(0, 60);
-    for (let i = 0; i < spans.length && !matched; i++) {
-      let concat = "";
-      for (let j = i; j < spans.length; j++) {
-        const text = spans[j]?.textContent ?? "";
-        concat += (j > i ? " " : "") + text;
-        if (norm(concat).includes(short)) {
-          matched = spans.slice(i, Math.min(j + 5, spans.length));
-          break;
-        }
-        if (concat.length > short.length + 200) break;
-      }
+  const matched: HTMLSpanElement[] = [];
+  for (const { el, start, end } of spanRanges) {
+    if (end > rawMatchStart && start < rawMatchEnd) {
+      matched.push(el);
     }
   }
+  return matched.length ? matched : null;
+}
 
-  if (!matched?.length) return false;
+function applyHighlightOverlays(
+  pageEl: HTMLElement,
+  matched: HTMLSpanElement[],
+) {
+  pageEl
+    .querySelectorAll(".pdf-highlight-overlay")
+    .forEach((e) => e.remove());
 
+  const prevPosition = pageEl.style.position;
+  if (!prevPosition || prevPosition === "static") {
+    pageEl.style.position = "relative";
+  }
+
+  const pageRect = pageEl.getBoundingClientRect();
   for (const span of matched) {
-    span.style.backgroundColor = "rgba(250, 204, 21, 0.45)";
-    span.style.borderRadius = "2px";
-    span.style.transition = "background-color 2s ease-out";
+    const rect = span.getBoundingClientRect();
+    if (rect.width === 0 || rect.height === 0) continue;
+    const overlay = document.createElement("div");
+    overlay.className = "pdf-highlight-overlay";
+    overlay.style.cssText = [
+      "position:absolute",
+      "pointer-events:none",
+      "z-index:5",
+      "border-radius:2px",
+      "background-color:rgba(250,204,21,0.4)",
+      "transition:opacity 2s ease-out",
+      `left:${rect.left - pageRect.left}px`,
+      `top:${rect.top - pageRect.top}px`,
+      `width:${rect.width}px`,
+      `height:${rect.height}px`,
+    ].join(";");
+    pageEl.appendChild(overlay);
   }
 
   setTimeout(() => {
-    for (const span of matched) {
-      span.style.backgroundColor = "transparent";
-    }
+    pageEl
+      .querySelectorAll(".pdf-highlight-overlay")
+      .forEach((e) => ((e as HTMLElement).style.opacity = "0"));
   }, 1500);
 
   setTimeout(() => {
-    for (const span of matched) {
-      span.style.removeProperty("background-color");
-      span.style.removeProperty("border-radius");
-      span.style.removeProperty("transition");
-    }
+    pageEl
+      .querySelectorAll(".pdf-highlight-overlay")
+      .forEach((e) => e.remove());
   }, 3500);
-
-  return true;
 }
 
 interface Props {
@@ -113,15 +191,23 @@ export const PdfViewer = forwardRef<PdfViewerHandle, Props>(
         el.scrollIntoView({ behavior: "smooth", block: "start" });
 
         if (verbatim) {
-          setTimeout(() => {
-            if (!highlightVerbatim(el, verbatim)) {
+          const tryHighlight = (attemptsLeft: number) => {
+            const matched = findMatchedSpans(el, verbatim);
+            if (matched) {
+              applyHighlightOverlays(el, matched);
+              return;
+            }
+            if (attemptsLeft > 0) {
+              setTimeout(() => tryHighlight(attemptsLeft - 1), 350);
+            } else {
               el.classList.add("ring-2", "ring-blue-500");
               setTimeout(
                 () => el.classList.remove("ring-2", "ring-blue-500"),
                 1500,
               );
             }
-          }, 500);
+          };
+          setTimeout(() => tryHighlight(5), 400);
         } else {
           el.classList.add("ring-2", "ring-blue-500");
           setTimeout(

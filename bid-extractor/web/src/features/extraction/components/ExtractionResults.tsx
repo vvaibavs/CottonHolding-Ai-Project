@@ -410,7 +410,7 @@ export function ExtractionResults({
                   <span className="flex-1">{c.title}</span>
                   <PageBadge
                     page={c.source.page}
-                    verbatim={c.source.verbatim}
+                    verbatim={c.source.verbatim ?? c.verbatim}
                     onCitationClick={onCitationClick}
                   />
                 </AlertTitle>
@@ -495,6 +495,7 @@ export function ExtractionResults({
                           {a.topic}
                           <PageBadge
                             page={a.source.page}
+                            verbatim={a.source.verbatim ?? a.verbatim_quote}
                             onCitationClick={onCitationClick}
                           />
                         </span>
