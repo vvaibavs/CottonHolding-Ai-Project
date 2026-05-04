@@ -12,7 +12,79 @@ import "react-pdf/dist/Page/AnnotationLayer.css";
 import "react-pdf/dist/Page/TextLayer.css";
 
 export interface PdfViewerHandle {
-  scrollToPage: (page: number) => void;
+  scrollToPage: (page: number, verbatim?: string | null) => void;
+}
+
+function highlightVerbatim(pageEl: HTMLElement, verbatim: string): boolean {
+  const textLayer = pageEl.querySelector(".react-pdf__Page__textContent");
+  if (!textLayer) return false;
+
+  const allSpans = Array.from(
+    textLayer.querySelectorAll("span"),
+  ) as HTMLSpanElement[];
+  const spans = allSpans.filter((s) => (s.textContent ?? "").trim());
+  if (!spans.length) return false;
+
+  const norm = (s: string) =>
+    s.toLowerCase().replace(/\s+/g, " ").trim();
+  const target = norm(verbatim);
+  if (!target) return false;
+
+  let matched: HTMLSpanElement[] | null = null;
+
+  for (let i = 0; i < spans.length && !matched; i++) {
+    let concat = "";
+    for (let j = i; j < spans.length; j++) {
+      const text = spans[j]?.textContent ?? "";
+      concat += (j > i ? " " : "") + text;
+      const nc = norm(concat);
+      if (nc.includes(target)) {
+        matched = spans.slice(i, j + 1);
+        break;
+      }
+      if (nc.length > target.length + 200) break;
+    }
+  }
+
+  if (!matched) {
+    const short = target.slice(0, 60);
+    for (let i = 0; i < spans.length && !matched; i++) {
+      let concat = "";
+      for (let j = i; j < spans.length; j++) {
+        const text = spans[j]?.textContent ?? "";
+        concat += (j > i ? " " : "") + text;
+        if (norm(concat).includes(short)) {
+          matched = spans.slice(i, Math.min(j + 5, spans.length));
+          break;
+        }
+        if (concat.length > short.length + 200) break;
+      }
+    }
+  }
+
+  if (!matched?.length) return false;
+
+  for (const span of matched) {
+    span.style.backgroundColor = "rgba(250, 204, 21, 0.45)";
+    span.style.borderRadius = "2px";
+    span.style.transition = "background-color 2s ease-out";
+  }
+
+  setTimeout(() => {
+    for (const span of matched) {
+      span.style.backgroundColor = "transparent";
+    }
+  }, 1500);
+
+  setTimeout(() => {
+    for (const span of matched) {
+      span.style.removeProperty("background-color");
+      span.style.removeProperty("border-radius");
+      span.style.removeProperty("transition");
+    }
+  }, 3500);
+
+  return true;
 }
 
 interface Props {
@@ -34,10 +106,23 @@ export const PdfViewer = forwardRef<PdfViewerHandle, Props>(
     const pageRefs = useRef<Record<number, HTMLDivElement | null>>({});
 
     useImperativeHandle(ref, () => ({
-      scrollToPage: (page: number) => {
+      scrollToPage: (page: number, verbatim?: string | null) => {
         const el = pageRefs.current[page];
-        if (el) {
-          el.scrollIntoView({ behavior: "smooth", block: "start" });
+        if (!el) return;
+
+        el.scrollIntoView({ behavior: "smooth", block: "start" });
+
+        if (verbatim) {
+          setTimeout(() => {
+            if (!highlightVerbatim(el, verbatim)) {
+              el.classList.add("ring-2", "ring-blue-500");
+              setTimeout(
+                () => el.classList.remove("ring-2", "ring-blue-500"),
+                1500,
+              );
+            }
+          }, 500);
+        } else {
           el.classList.add("ring-2", "ring-blue-500");
           setTimeout(
             () => el.classList.remove("ring-2", "ring-blue-500"),

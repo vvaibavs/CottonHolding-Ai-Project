@@ -94,12 +94,12 @@ export default function ExtractionPage() {
     if (qp.success) parsedQuestions = qp.data;
   }
 
-  const handleCitationClick = (page: number) => {
+  const handleCitationClick = (page: number, verbatim?: string | null) => {
     if (!isWide) setMobileTab("document");
     const wasCollapsed = isWide && pdfCollapsed;
     if (wasCollapsed) setPdfCollapsed(false);
     setTimeout(
-      () => viewerRef.current?.scrollToPage(page),
+      () => viewerRef.current?.scrollToPage(page, verbatim),
       wasCollapsed ? 150 : isWide ? 0 : 50,
     );
   };

@@ -32,13 +32,13 @@ function PageBadge({
 }: {
   page: number;
   verbatim?: string | null;
-  onCitationClick?: (page: number) => void;
+  onCitationClick?: (page: number, verbatim?: string | null) => void;
 }) {
   return (
     <button
       className="group/pg relative inline-flex items-center gap-1 rounded-full border border-white/[0.08] px-2 py-0.5 text-[11px] tabular-nums text-muted-foreground/60 transition-all duration-200 hover:border-white/[0.2] hover:text-foreground hover:shadow-[0_0_8px_rgba(255,255,255,.06)]"
       title={`Jump to page ${page}${verbatim ? ` · "${verbatim}"` : ""}`}
-      onClick={() => onCitationClick?.(page)}
+      onClick={() => onCitationClick?.(page, verbatim)}
     >
       <span className="absolute inset-0 rounded-[inherit] bg-white/[0.03] opacity-0 transition-opacity duration-200 group-hover/pg:opacity-100" />
       <span className="relative">pg. {page}</span>
@@ -84,7 +84,7 @@ export function ExtractionResults({
   data: BidExtraction;
   jobId: string;
   questions?: QuestionSet | null;
-  onCitationClick?: (page: number) => void;
+  onCitationClick?: (page: number, verbatim?: string | null) => void;
   sidebarOverlay?: boolean;
 }) {
   const [active, setActive] = useState("summary");
